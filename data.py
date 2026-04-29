@@ -42,3 +42,17 @@ if __name__ == "__main__":               # Only run the code below if I run data
 
     df = get_stock_data(test_tickers, test_quantities)
     print(df)
+
+def add_allocation_percentages(df):
+    """
+    Add allocation percentage for each asset based on total portfolio value.
+    """
+
+    total_value = df["total_value"].sum()
+
+    if total_value == 0:
+        df["allocation_percentage"] = 0
+    else:
+        df["allocation_percentage"] = (df["total_value"] / total_value) * 100
+
+    return df

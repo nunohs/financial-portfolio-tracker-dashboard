@@ -19,10 +19,10 @@ Out of scope for MVP:
 - Advanced risk analytics
 - Real-time auto-refresh
 """
-import streamlit as st
-import pandas as pd
-
-from data import get_stock_data
+import streamlit as st   # Builds the dashboard
+import pandas as pd      # pandas handles tables
+import plotly.express as px
+import data
 
 
 st.set_page_config(
@@ -65,7 +65,8 @@ for i in range(5):
 
 
 if tickers:
-    portfolio_df = get_stock_data(tickers, quantities)
+    portfolio_df = data.get_stock_data(tickers, quantities)
+    portfolio_df = data.add_allocation_percentages(portfolio_df)
 
     st.subheader("Portfolio Summary")
 
@@ -77,6 +78,21 @@ if tickers:
     )
 
     st.dataframe(portfolio_df, use_container_width=True)
+    st.subheader("Portfolio Allocation")
+
+    allocation_fig = px.pie(  # Creates a pie chart
+        portfolio_df,
+        names="ticker",
+        values="total_value",
+        hole=0.4
+    )
+
+    allocation_fig.update_traces(
+        textposition="inside",
+        textinfo="percent+label"
+    )
+
+    st.plotly_chart(allocation_fig, use_container_width=True)
 
 else:
     st.info("Enter at least one asset in the sidebar to get started.")
