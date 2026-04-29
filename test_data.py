@@ -1,4 +1,4 @@
-import yfinance as yf  #library that talks to Yahoo Finance
+import yfinance as yf  #library that talks to Yahoo Finance, fetching price/market data
 import requests        #lets Python make web requests (like a browser)
 
 # Test stock data, Apple, Microsoft, Tesla
