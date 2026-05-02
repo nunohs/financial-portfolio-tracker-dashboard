@@ -82,3 +82,67 @@ def get_historical_value(tickers, quantities, period="30d"):
     result = historical_values[["total_portfolio_value"]].reset_index()
 
     return result
+
+def get_performance_metrics(tickers, quantities, period="30d"):
+    """
+    Calculate total portfolio return, best performing asset, and worst performing asset.
+    """
+
+    asset_returns = []
+    starting_total_value = 0
+    ending_total_value = 0
+
+    for ticker, quantity in zip(tickers, quantities):
+        asset = yf.Ticker(ticker)
+        history = asset.history(period=period)
+
+        if history.empty:
+            continue
+
+        starting_price = history["Close"].iloc[0]
+        ending_price = history["Close"].iloc[-1]
+
+        starting_value = starting_price * quantity
+        ending_value = ending_price * quantity
+
+        starting_total_value += starting_value
+        ending_total_value += ending_value
+
+        asset_return_percentage = ((ending_price - starting_price) / starting_price) * 100
+
+        asset_returns.append({
+            "ticker": ticker,
+            "return_percentage": asset_return_percentage
+        })
+
+    if starting_total_value == 0:
+        total_return_percentage = 0
+    else:
+        total_return_percentage = (
+            (ending_total_value - starting_total_value) / starting_total_value
+        ) * 100
+
+    returns_df = pd.DataFrame(asset_returns)
+
+    if returns_df.empty:
+        best_asset = "N/A"
+        best_return = 0
+        worst_asset = "N/A"
+        worst_return = 0
+    else:
+        best_row = returns_df.loc[returns_df["return_percentage"].idxmax()]
+        worst_row = returns_df.loc[returns_df["return_percentage"].idxmin()]
+
+        best_asset = best_row["ticker"]
+        best_return = best_row["return_percentage"]
+
+        worst_asset = worst_row["ticker"]
+        worst_return = worst_row["return_percentage"]
+
+    return {
+        "total_return_percentage": total_return_percentage,
+        "best_asset": best_asset,
+        "best_return": best_return,
+        "worst_asset": worst_asset,
+        "worst_return": worst_return
+    }
