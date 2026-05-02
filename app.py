@@ -94,5 +94,17 @@ if tickers:
 
     st.plotly_chart(allocation_fig, use_container_width=True)
 
+    st.subheader("30-Day Portfolio Performance")
+
+    historical_df = data.get_historical_value(tickers, quantities)
+
+    performance_fig = px.line(
+        historical_df,
+        x="Date",
+        y="total_portfolio_value",
+        title="Portfolio Value Over Time"
+    )
+    st.plotly_chart(performance_fig, use_container_width=True)
+
 else:
     st.info("Enter at least one asset in the sidebar to get started.")

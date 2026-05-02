@@ -56,3 +56,29 @@ def add_allocation_percentages(df):
         df["allocation_percentage"] = (df["total_value"] / total_value) * 100
 
     return df
+
+def get_historical_value(tickers, quantities, period="30d"):
+    """
+    Fetch historical prices and calculate total portfolio value over time.
+
+    Returns:
+        DataFrame with date and total_portfolio_value
+    """
+
+    historical_values = pd.DataFrame()  # Creates an empty table
+
+    for ticker, quantity in zip(tickers, quantities):
+        asset = yf.Ticker(ticker)
+        history = asset.history(period=period) #Fetches historical prices
+
+        if history.empty:
+            continue
+
+        asset_value = history["Close"] * quantity  # Calculate value of this holding over time
+        historical_values[ticker] = asset_value
+
+    historical_values["total_portfolio_value"] = historical_values.sum(axis=1) # Sum across columns to get total value for each date
+
+    result = historical_values[["total_portfolio_value"]].reset_index()
+
+    return result
