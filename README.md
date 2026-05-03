@@ -8,7 +8,7 @@ Users can enter asset tickers and quantities to view current portfolio value, al
 
 ## Screenshot
 
-![Portfolio Tracker Dashboard](assets\dashboard-screenshot1.png)
+![Portfolio Tracker Dashboard](assets/dashboard-screenshot1.png)
 
 ## Features
 
