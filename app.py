@@ -71,10 +71,25 @@ for i in range(5):
 
 
 if tickers:
-    portfolio_df = data.get_stock_data(tickers, quantities)
+    portfolio_df, invalid_tickers = data.get_stock_data(tickers, quantities)
+
+    if invalid_tickers:
+        st.error(
+            "Could not fetch data for: "
+            + ", ".join(invalid_tickers)
+            + ". Please check the ticker symbol."
+        )
+
+    if portfolio_df.empty:
+        st.warning("No valid assets found. Please enter at least one valid ticker.")
+        st.stop()
+        
     portfolio_df = data.add_allocation_percentages(portfolio_df)
 
-    metrics = data.get_performance_metrics(tickers, quantities)
+    valid_tickers = portfolio_df["ticker"].tolist()
+    valid_quantities = portfolio_df["quantity"].tolist()
+
+    metrics = data.get_performance_metrics(valid_tickers, valid_quantities)
 
     st.subheader("Summary")
 
@@ -116,7 +131,7 @@ if tickers:
         value=f"${total_portfolio_value:,.2f}"
     )
 
-    st.dataframe(portfolio_df, use_container_width=True)
+    st.dataframe(portfolio_df, width="stretch")
     st.subheader("Portfolio Allocation")
 
     allocation_fig = px.pie(  # Creates a pie chart
@@ -131,11 +146,11 @@ if tickers:
         textinfo="percent+label"
     )
 
-    st.plotly_chart(allocation_fig, use_container_width=True)
+    st.plotly_chart(allocation_fig, width="stretch")
 
     st.subheader("30-Day Portfolio Performance")
 
-    historical_df = data.get_historical_value(tickers, quantities)
+    historical_df = data.get_historical_value(valid_tickers, valid_quantities)
 
     performance_fig = px.line(
         historical_df,
@@ -148,7 +163,7 @@ if tickers:
         xaxis_title="Date",
         yaxis_title="Portfolio Value (USD)"
     )
-    st.plotly_chart(performance_fig, use_container_width=True)
+    st.plotly_chart(performance_fig, width="stretch")
 
 else:
     st.info("Enter at least one asset in the sidebar to get started.")
