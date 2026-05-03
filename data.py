@@ -159,6 +159,59 @@ def get_performance_metrics(tickers, quantities, period="30d"):
         "worst_return": worst_return
     }
 
+def get_benchmark_comparison(tickers, quantities, benchmark_ticker="SPY", period="30d"):
+    """
+    Compare portfolio performance against a benchmark.
+
+    Both portfolio and benchmark are normalised to 100 at the first available date.
+    """
+
+    portfolio_history = get_historical_value(tickers, quantities, period)
+
+    if portfolio_history.empty:
+        return pd.DataFrame(), 0, 0, 0
+
+    benchmark = yf.Ticker(benchmark_ticker) # Create a ticker object for the benchmark (SPY is an ETF that tracks the S&P 500)
+    benchmark_history = benchmark.history(period=period)
+
+    if benchmark_history.empty:
+        return pd.DataFrame(), 0, 0, 0
+
+    benchmark_df = benchmark_history[["Close"]].reset_index()
+    benchmark_df = benchmark_df.rename(columns={"Close": "benchmark_value"})
+
+    comparison_df = portfolio_history.merge( # Merge the portfolio history with the benchmark history based on the date
+        benchmark_df,
+        on="Date",
+        how="inner"
+    )
+
+    if comparison_df.empty:
+        return pd.DataFrame(), 0, 0, 0
+
+    portfolio_start = comparison_df["total_portfolio_value"].iloc[0]
+    benchmark_start = comparison_df["benchmark_value"].iloc[0]
+
+    if portfolio_start == 0 or benchmark_start == 0:
+        return pd.DataFrame(), 0, 0, 0
+
+    comparison_df["Portfolio"] = ( # Normalize the portfolio value to 100 at the start date
+        comparison_df["total_portfolio_value"] / portfolio_start
+    ) * 100
+
+    comparison_df["S&P 500 Benchmark"] = ( # Normalize the benchmark value to 100 at the start date
+        comparison_df["benchmark_value"] / benchmark_start
+    ) * 100
+
+    portfolio_return = comparison_df["Portfolio"].iloc[-1] - 100
+    benchmark_return = comparison_df["S&P 500 Benchmark"].iloc[-1] - 100
+    difference = portfolio_return - benchmark_return
+
+    comparison_df = comparison_df[
+        ["Date", "Portfolio", "S&P 500 Benchmark"]
+    ]
+
+    return comparison_df, portfolio_return, benchmark_return, difference
 
 if __name__ == "__main__":               # Only run the code below if I run data.py directly.
     test_tickers = ["AAPL", "MSFT", "BTC-USD"]

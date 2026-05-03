@@ -166,5 +166,56 @@ if tickers:
     )
     st.plotly_chart(performance_fig, width="stretch")
 
+
+    st.subheader("Benchmark Comparison")
+
+    comparison_df, portfolio_return, benchmark_return, difference = data.get_benchmark_comparison(
+        tickers,
+        quantities
+    )
+
+    if comparison_df.empty:
+        st.warning("Benchmark comparison is unavailable for the selected assets.")
+    else:
+        benchmark_col1, benchmark_col2, benchmark_col3 = st.columns(3) # Creates 3 columns for the benchmark metrics
+
+        with benchmark_col1:
+            st.metric(
+                label="Portfolio 30-Day Return",
+                value=f"{portfolio_return:.2f}%"
+            )
+
+        with benchmark_col2:
+            st.metric(
+                label="S&P 500 30-Day Return",
+                value=f"{benchmark_return:.2f}%"
+            )
+
+        with benchmark_col3:
+            if difference >= 0:
+                result_label = "Outperformed Benchmark"
+            else:
+                result_label = "Underperformed Benchmark"
+
+            st.metric(
+                label=result_label,
+                value=f"{difference:.2f} percentage points"
+            )
+
+        benchmark_fig = px.line( # Creates a line chart comparing the portfolio and benchmark
+            comparison_df,
+            x="Date",
+            y=["Portfolio", "S&P 500 Benchmark"],
+            title="Portfolio vs S&P 500 Benchmark"
+        )
+
+        benchmark_fig.update_layout(
+            xaxis_title="Date",
+            yaxis_title="Normalised Value (Day 0 = 100)",
+            legend_title="Series"
+        )
+
+        st.plotly_chart(benchmark_fig, use_container_width=True)
+
 else:
     st.info("Enter at least one asset in the sidebar to get started.")
