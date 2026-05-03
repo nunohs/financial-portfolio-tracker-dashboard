@@ -77,7 +77,8 @@ if tickers:
         st.error(
             "Could not fetch data for: "
             + ", ".join(invalid_tickers)
-            + ". Please check the ticker symbol."
+            + ". Please check the ticker symbol. "
+            "For crypto, use Yahoo Finance format such as BTC-USD or ETH-USD."
         )
 
     if portfolio_df.empty:
