@@ -1,18 +1,25 @@
 # Portfolio Tracker Dashboard
 
+**Live App:** https://financial-portfolio-tracker-dashboard-szj5s9fm37v55bkuiajgy9.streamlit.app/
+
 A Python and Streamlit dashboard for tracking stock and cryptocurrency holdings.
 
-This project is currently in progress.
+Users can enter asset tickers and quantities to view current portfolio value, allocation breakdown, 30-day performance, and basic return insights.
 
-## Project Goal
+## Screenshot
 
-The goal of this project is to build a simple portfolio tracker where users can input their holdings and view:
+![Portfolio Tracker Dashboard](assets\dashboard-screenshot1.png)
 
-- Current value per asset
-- Total portfolio value
-- Portfolio allocation by asset
-- 30-day portfolio performance
-- Key metrics such as total return, best performer, and worst performer
+## Features
+
+- Input up to five stock or crypto holdings
+- Fetch current asset prices using yfinance
+- Calculate current value per holding
+- Calculate total portfolio value
+- Display portfolio allocation as a donut chart
+- Show 30-day portfolio performance as a line chart
+- Identify best and worst performing assets over 30 days
+- Handle invalid tickers with friendly error messages
 
 ## Tech Stack
 
@@ -23,6 +30,45 @@ The goal of this project is to build a simple portfolio tracker where users can 
 - yfinance
 - CoinGecko API / requests
 
-## Project Status
+## What I Learned
 
-In development.
+This project helped me practise working with real financial data, API-based data fetching, pandas data processing, and dashboard development. I also learned how to separate data logic from user interface code and deploy a data app using Streamlit Community Cloud.
+
+## How to Run Locally
+
+Clone the repository:
+
+```bash
+git clone YOUR_GITHUB_REPO_LINK
+cd portfolio-tracker-dashboard
+```
+
+Create and activate a virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+Mac/Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the app:
+
+```bash
+streamlit run app.py
+```
