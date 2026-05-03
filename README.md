@@ -20,6 +20,8 @@ Users can enter asset tickers and quantities to view current portfolio value, al
 - Show 30-day portfolio performance as a line chart
 - Identify best and worst performing assets over 30 days
 - Handle invalid tickers with friendly error messages
+- Compare portfolio performance against the S&P 500 using SPY as a benchmark
+- Normalise portfolio and benchmark performance to 100 for fair comparison
 
 ## Tech Stack
 
